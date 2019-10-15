@@ -3,7 +3,7 @@ module ALU(Read_Data_1, Alu_Src_Output, ALUctrl , Alu_Result ,Zero);
 input  wire signed [31:0] Read_Data_1;
 input  wire signed [31:0] Alu_Src_Output;
 input  wire signed [3:0] ALUctrl;
-output reg  signed [31:0] Alu_Result;
+output reg   [31:0] Alu_Result;
 input  wire Zero;
 
 localparam AND = 4'b0000;
@@ -11,7 +11,7 @@ localparam OR  = 4'b0001;
 localparam ADD = 4'b0010;
 localparam SUB = 4'b0110;
 localparam SLT = 4'b0111;
-//localparam NOR = 4'b1100;
+localparam NOR = 4'b1100;
 
 assign Zero = ( Read_Data_1 == Alu_Src_Output);
 always@(Read_Data_1,Alu_Src_Output,ALUctrl)
@@ -23,7 +23,7 @@ begin
 	ADD: Alu_Result <= Read_Data_1 +  Alu_Src_Output ;
 	SUB: Alu_Result <= Read_Data_1 -  Alu_Src_Output ;
 	SLT: Alu_Result <=(Read_Data_1 <  Alu_Src_Output);
-//	NOR: Alu_Result <= Read_Data_1 ~| Alu_Src_Output ;
+	NOR: Alu_Result <= ~(Read_Data_1 | Alu_Src_Output) ;
 	default : $display ("ERROR_NOT_RAY2 CODE: %b",ALUctrl);
 	endcase
 end
@@ -42,7 +42,7 @@ localparam NOR = 4'b1100;
 reg  signed[31:0] in1;
 reg  signed[31:0] in2;
 reg  signed[3:0]  ctrl;
-wire signed[31:0] result;
+wire [31:0] result;
 wire zero;
 
 initial
@@ -57,7 +57,15 @@ ctrl = ADD;
 #1
 in1 = 50;
 in2 =20;
-ctrl = SUB;
+ctrl = NOR;
+#1
+in1 = 50;
+in2 =20;
+ctrl = SLT;
+#1
+in1 = 50;
+in2 =55;
+ctrl = SLT;
 
 end
 
